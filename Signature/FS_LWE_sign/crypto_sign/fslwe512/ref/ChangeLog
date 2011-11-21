@@ -1,0 +1,3 @@
+2011-06-23  wladimir  <wladimir@hp-laptop>
+
+	* fs_lwe_sign.cpp (init_random): 
