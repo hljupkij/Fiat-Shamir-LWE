@@ -30,7 +30,9 @@ int crypto_sign_keypair(unsigned char *pk, unsigned char *sk){
 
 	NTL::ZZ_pE sk_ZZ[PP.m];
 	NTL::ZZ_pE rhf[PP.m];
-// TODO: generierung von sk und hash-polynom getrennt voneinander -> threads/parallel auf mehreren kernen berechnen
+
+	// TODO: generation of sk und hash-polynomial are separate -> threads?
+
 	result = generate_sk(PP,sk_ZZ);			// generate secret key
 
 	generate_random_hash_function(PP, rhf, PP.m);	// generate polynomial for hash-function
@@ -40,8 +42,8 @@ int crypto_sign_keypair(unsigned char *pk, unsigned char *sk){
 	convert_ZZ_pE_array_to_char_array(rhf, PP.m, &length, &pk[BYTES_PRIMENUMBER]);
 	convert_ZZ_pE_array_to_char_array(rhf, PP.m, &length, &sk[BYTES_PRIMENUMBER]);
 
-	convert_ZZ_pE_array_to_char_array(&pk_ZZ_pE, 1, &length, &pk[BYTES_PRIMENUMBER+BYTES_HASHPOLYNOMIAL]);
-	convert_ZZ_pE_array_to_char_array(sk_ZZ, PP.m, &length, &sk[BYTES_PRIMENUMBER+BYTES_HASHPOLYNOMIAL]);
+	convert_ZZ_pE_array_to_char_array(&pk_ZZ_pE, 1, &length, &pk[BYTES_PRIMENUMBER+BYTES_HASHFUNCTION]);
+	convert_ZZ_pE_array_to_char_array(sk_ZZ, PP.m, &length, &sk[BYTES_PRIMENUMBER+BYTES_HASHFUNCTION]);
 
 	 return 0;
  }
@@ -60,8 +62,8 @@ int crypto_sign(unsigned char *sm,unsigned long long *smlen, const unsigned char
 
 	NTL::ZZ_pE hash_polynomial[PUBLIC_PARAMETER_M];
 	NTL::ZZ_pE sk_ZZ_pE[PUBLIC_PARAMETER_M];
-	convert_char_array_to_ZZ_pE_array(hash_polynomial, (unsigned char*)&sk[BYTES_PRIMENUMBER], BYTES_HASHPOLYNOMIAL, PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
-	convert_char_array_to_ZZ_pE_array(sk_ZZ_pE, (unsigned char*)&sk[BYTES_PRIMENUMBER+BYTES_HASHPOLYNOMIAL],BYTES_SECRETKEY,PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
+	convert_char_array_to_ZZ_pE_array(hash_polynomial, (unsigned char*)&sk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION, PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
+	convert_char_array_to_ZZ_pE_array(sk_ZZ_pE, (unsigned char*)&sk[BYTES_PRIMENUMBER+BYTES_HASHFUNCTION],BYTES_SECRETKEY,PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
 
 	NTL::ZZ_pE sign_e;
 	NTL::ZZ_pE sign_z[PUBLIC_PARAMETER_M];
@@ -97,8 +99,8 @@ int crypto_sign(unsigned char *sm,unsigned long long *smlen, const unsigned char
 	NTL::ZZ_pE pk_ZZ_pE, sign_e;
 
 
-	convert_char_array_to_ZZ_pE_array(hash_polynomial,(unsigned char*)&pk[BYTES_PRIMENUMBER], BYTES_HASHPOLYNOMIAL,PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_N);
-	convert_char_array_to_ZZ_pE_array(&pk_ZZ_pE,(unsigned char*)&pk[BYTES_PRIMENUMBER+BYTES_HASHPOLYNOMIAL],BYTES_PUBLICKEY,1,PUBLIC_PARAMETER_N);
+	convert_char_array_to_ZZ_pE_array(hash_polynomial,(unsigned char*)&pk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION,PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_N);
+	convert_char_array_to_ZZ_pE_array(&pk_ZZ_pE,(unsigned char*)&pk[BYTES_PRIMENUMBER+BYTES_HASHFUNCTION],BYTES_PUBLICKEY,1,PUBLIC_PARAMETER_N);
 	convert_char_array_to_ZZ_pE_array(sign_z,(unsigned char *) (sm+*mlen),BYTES_SIGNATUR_Z, PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_N);
 	convert_char_array_to_ZZ_pE_array(&sign_e,(unsigned char *) (sm+*mlen+BYTES_SIGNATUR_Z), BYTES_SIGNATUR_E, 1, PUBLIC_PARAMETER_N);
 

@@ -5,7 +5,7 @@ LIBS = -lm -lntl -lgmp -lcrypto -lrt -lcpptest
 LIBINC = -L /home/wladimir/sw/lib -L /usr/include/lib -L /usr/lib -L /usr/local/lib
 
 OBJ = aux.o fs_lwe_sign.o test.o
-OBJ2 = aux.o TestSuite.o
+OBJ2 = aux.o fs_lwe_sign.o TestSuite.o
 OUT = test
 OUT2 = TestSuite
 

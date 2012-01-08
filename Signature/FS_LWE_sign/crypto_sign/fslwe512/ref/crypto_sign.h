@@ -8,7 +8,6 @@
 #ifndef CRYPTO_SIGN_H_
 #define CRYPTO_SIGN_H_
 
-
 int crypto_sign_keypair(unsigned char *pk, unsigned char *sk);
 
 int crypto_sign(

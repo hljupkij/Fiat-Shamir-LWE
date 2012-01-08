@@ -13,12 +13,10 @@
 #include <NTL/ZZ_pE.h>
 #include <NTL/ZZ_pX.h>
 #include "sizes.h"
+#include <cstdlib>
+#include <vector>
 
 //NTL_CLIENT
-struct SecretKey {
-	NTL::ZZ_pE *SK;
-};
-
 struct PublicParameter{
 	int n;				// Define the degree of polynomials
 	int m;				// define the number of polynomials
@@ -26,16 +24,7 @@ struct PublicParameter{
 	int k;				//
 };
 
-struct Signatur{
-	int length;
-	NTL::ZZ_pE hash_RO_ZZ_pE;
-	NTL::ZZ_pE* array_ZZ_pE;
-};
-
-struct Hash_Function{
-	int length;
-	NTL::ZZ_pE* array_ZZ_pE;
-};
+NTL::ZZ_pE generate_element_Dc(NTL::ZZ num_coeff, NTL::ZZ L1_value, unsigned char* md_value, unsigned int charArraySize);
 
 /* Generate secret key for FS_LWE-Schema.
  * sk€Ds^m && Linf(sk) <= sigma. */
@@ -56,5 +45,19 @@ int random_element_Dy(PublicParameter PP, NTL::ZZ_pE* randomDy);
 /* Take as input a random hash function and a message and put an element from Dc out.
  * This function should act as random oracle. */
 NTL::ZZ_pE RandomOracle_Dc(PublicParameter PP, NTL::ZZ_pE LWE_hash_rand, unsigned char* message, unsigned long long message_length);
+
+int crypto_sign_keypair(unsigned char *pk, unsigned char *sk);
+
+int crypto_sign(
+       unsigned char *sm,unsigned long long *smlen,
+       const unsigned char *m,unsigned long long mlen,
+       const unsigned char *sk
+     );
+
+int crypto_sign_open(
+  unsigned char *m,unsigned long long *mlen,
+  const unsigned char *sm,unsigned long long smlen,
+  const unsigned char *pk
+);
 
 #endif /* FS_LWE_SIGN_H_ */

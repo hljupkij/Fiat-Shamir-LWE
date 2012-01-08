@@ -1,8 +1,8 @@
 /*
- * aux.cpp
  *
- *  Created on: 16.10.2011
- *      Author: Wladimir Paulsen
+ * 	@file aux.cpp
+ *  @date 16.10.2011
+ *  @author Wladimir Paulsen
  */
 
 #include "aux.h"
@@ -15,8 +15,16 @@
 
 NTL_CLIENT
 
-/* Setup a polynomial ring with (x^degree+1) as irreducible polynomial. */
+
+/** Set up a polynomial ring with (x^degree+1) as irreducible polynomial.
+ * @param 	modulus_ZZ_pE 	Modulus of underlying integer field.
+ * @param 	degree 			Degree of reduction polynomial.
+ * @return 	Return 0 if successful else 1.
+ * */
 int initialize_ZZ_pE(ZZ modulus_ZZ_pE, int degree){
+	if(modulus_ZZ_pE < 2 || degree < 1){
+		return EXIT_FAILURE;
+	}
 	ZZ_p::init(modulus_ZZ_pE);				// define GF(p)
 
 	ZZ_pX P = ZZ_pX(degree,to_ZZ_p(1));		// define P as x^n
@@ -27,19 +35,23 @@ int initialize_ZZ_pE(ZZ modulus_ZZ_pE, int degree){
 	return EXIT_SUCCESS;
 }
 
-/* Compute binomial n over k and return the result. */
+/** Compute binomial n over k and return the result.
+ * @param  	n	Integer
+ * @param	k	Integer
+ * @return 	Return 0 if (n < k) or (n < 0) or (k < 0).
+ * @return 	Return 1 if (n==0) or (k==0).
+ * @return 	Else return (n over k) = n! / (k!*(n-k)!).
+ * */
 ZZ ZZ_binomial(ZZ n, ZZ k){
 	int i;
 	ZZ out,n_,k_;
 
-	if(n < k){
-		out = ZZ::zero();
-		return out;
+	if(n < k||n < ZZ::zero()||k < ZZ::zero()){
+		return ZZ::zero();
 	}
 
 	if(n == 0 || k == 0){
-		out = to_ZZ(1);
-		return out;
+		return to_ZZ(1);
 	}
 
 	k_ = k;
@@ -56,7 +68,10 @@ ZZ ZZ_binomial(ZZ n, ZZ k){
 	return out;
 }
 
-/* Return the highest coefficient of polynomial. */
+/** Return the highest coefficient of polynomial.
+ * @param 	polynomial		Polynomial of class Zp[x]/<x^n+1> which should be analyzed.
+ * @return  The highest coefficient in range [-p/2,..,p/2] of polynomial.
+ **/
 ZZ Linf_norm_ZZ_pE(ZZ_pE polynomial){
 	ZZ result, modulus, coeff_x_;
 	ZZ_p coeff_x;
@@ -81,7 +96,14 @@ ZZ Linf_norm_ZZ_pE(ZZ_pE polynomial){
 	return result;
 }
 
-// Compare two ZZ_pE-arrays.
+/**
+ * Compare two ZZ_pE-arrays.
+ *
+ * @param polynomial_array1	First polynomial array to compare.
+ * @param polynomial_array2	Second polynomial array to compare.
+ * @param number_of_elements Number of polynomials in array.
+ * @return Return 0 if arrays are the same, else return 1.
+ */
 int compare_ZZ_pE(ZZ_pE* polynomial_array1, ZZ_pE* polynomial_array2, int number_of_elements){
 	ZZ_pX pol_ZZ_pX1, pol_ZZ_pX2;
 
@@ -95,10 +117,6 @@ int compare_ZZ_pE(ZZ_pE* polynomial_array1, ZZ_pE* polynomial_array2, int number
 
 		for (int coeff_power = 0; coeff_power < polynomial_array1[0].degree() ; ++coeff_power) {
 			if(coeff(pol_ZZ_pX1, coeff_power) != coeff(pol_ZZ_pX2, coeff_power)){
-				//cout<<"modulus:"<<coeff(pol_ZZ_pX1, coeff_power).modulus()<<"\n";
-				//printf("coefficients are not the same!\n");
-				//cout<<"element1 z["<<index<<"]["<<coeff_power<<"]="<<coeff(pol_ZZ_pX1, coeff_power)<<"\n";
-				//cout<<"element2 z["<<index<<"]["<<coeff_power<<"]="<<coeff(pol_ZZ_pX2, coeff_power)<<"\n";
 				return EXIT_FAILURE;
 			}
 		}
@@ -106,7 +124,12 @@ int compare_ZZ_pE(ZZ_pE* polynomial_array1, ZZ_pE* polynomial_array2, int number
 	return EXIT_SUCCESS;
 }
 
-// Compare two ZZ_pE-arrays.
+/** Compare two ZZ_pE-arrays.
+ *
+ * @param polynomial_array1	First polynomial array to compare.
+ * @param polynomial_array2	Second polynomial array to compare.
+ * @return	eturn 0 if arrays are the same, else return 1.
+ */
 int compare_ZZ_pE(vector<ZZ_pE> polynomial_array1, vector<ZZ_pE> polynomial_array2){
 	ZZ_pX pol_ZZ_pX1, pol_ZZ_pX2;
 
@@ -114,16 +137,12 @@ int compare_ZZ_pE(vector<ZZ_pE> polynomial_array1, vector<ZZ_pE> polynomial_arra
 		return EXIT_FAILURE;
 	}
 
-	for (int index = 0; index < polynomial_array1.size(); ++index) {
+	for (unsigned int index = 0; index < polynomial_array1.size(); ++index) {
 		pol_ZZ_pX1 = rep(polynomial_array1.at(index));
 		pol_ZZ_pX2 = rep(polynomial_array2.at(index));
 
 		for (int coeff_power = 0; coeff_power < polynomial_array1.at(index).degree() ; ++coeff_power) {
 			if(coeff(pol_ZZ_pX1, coeff_power) != coeff(pol_ZZ_pX2, coeff_power)){
-				//cout<<"modulus:"<<coeff(pol_ZZ_pX1, coeff_power).modulus()<<"\n";
-				//printf("coefficients are not the same!\n");
-				//cout<<"element1 z["<<index<<"]["<<coeff_power<<"]="<<coeff(pol_ZZ_pX1, coeff_power)<<"\n";
-				//cout<<"element2 z["<<index<<"]["<<coeff_power<<"]="<<coeff(pol_ZZ_pX2, coeff_power)<<"\n";
 				return EXIT_FAILURE;
 			}
 		}
@@ -131,19 +150,22 @@ int compare_ZZ_pE(vector<ZZ_pE> polynomial_array1, vector<ZZ_pE> polynomial_arra
 	return EXIT_SUCCESS;
 }
 
-/* Return the sum of absolute value of polynomial coefficients.
- * Polynomial coefficients are in range [-mod/2...mod/2]. */
-ZZ L1_norm_ZZ_pE(ZZ_pE x){
+/**
+ *	Compute the L1-Norm of polynomial.
+ * @param polynomial	Polynomial of class Zp[x]/<x^n+1> which should be analyzed.
+ * @return The sum of polynomial coefficients in range [-p/2,..,p/2].
+ */
+ZZ L1_norm_ZZ_pE(ZZ_pE polynomial){
 	ZZ result, modulus, coeff_x_;
 	ZZ_p coeff_x;
 	ZZ_pX x_;
 
-	x_ = rep(x);
+	x_ = rep(polynomial);
 
 	result = 0;
 	modulus = (coeff(x_,0)).modulus();
 
-	for (int x_deg = 0; x_deg < x.degree(); ++x_deg) {
+	for (int x_deg = 0; x_deg < polynomial.degree(); ++x_deg) {
 		coeff_x = coeff(x_,x_deg);
 		coeff_x_ = rep(coeff_x);
 		if(coeff_x_ > modulus/2){
@@ -154,7 +176,11 @@ ZZ L1_norm_ZZ_pE(ZZ_pE x){
 	return result;
 }
 
-/* Read in number_chars random bytes from /dev/random and initialize NTL-PRNG with it. */
+/**
+ * Read in number_chars random bytes from /dev/random and initialize NTL-PRNG with it.
+ * @param number_chars	Number of chars to read from /dev/random.
+ * @return 0 if successful, 1 else.
+ */
 int init_random(int number_chars){
 	FILE *random_source;
 	char random_char[number_chars];
@@ -175,7 +201,13 @@ int init_random(int number_chars){
 	return EXIT_SUCCESS;
 }
 
-/* Return number of elements whose L1-norm is less or equal to max_norm_1. L1|x|<= max_norm_1 */
+/**
+ * Return the number of polynomials Zp[x]/<x^n+1> whose L1-norm is less or equal to max_norm_1. L1|x|<= max_norm_1
+ * Assume that p > 2*max_norm_1.
+ * @param element_length	Maximal degree of polynomials (n).
+ * @param max_norm_1		Maximal L1-norm of polynomials.
+ * @return	The number of polynomials |X|. X={ y€Zp[x]/<x^n+1> : L1(y) <= num_coeffs}.
+ */
 NTL::ZZ count_elements_up_to_L1(int element_length, int max_norm_1){
 	ZZ count = ZZ::zero();
 
@@ -185,7 +217,13 @@ NTL::ZZ count_elements_up_to_L1(int element_length, int max_norm_1){
 	return count;
 }
 
-/* Return number of elements whose L1-norm _exactly_ equal to norm_1. */
+/**
+ * Return number of polynomials Zp[x]/<x^n+1> whose L1-norm is equal to norm_1.
+ * Assume that p > 2*max_norm_1.
+ * @param element_length	Maximal degree of polynomials (n).
+ * @param norm_1			L1-norm of polynomials.
+ * @return	The number of polynomials |X|. X={ y€Zp[x]/<x^n+1> : L1(y) = norm_1}.
+ */
 ZZ count_elements_with_L1(int element_length, int norm_1){
 	ZZ count = ZZ::zero();
 	if(element_length <= 0){
@@ -202,11 +240,31 @@ ZZ count_elements_with_L1(int element_length, int norm_1){
 	return count;
 }
 
+/**
+ * Return number of polynomials Zp[x]/<x^n+1> whose L1-norm is equal to norm_1 and the number of settled coefficients is equal to num_coeffs.
+ * @param element_length	Maximal degree of polynomials (n).
+ * @param norm_1			L1-norm of polynomials.
+ * @param num_coeffs		Number of settled coefficients.
+ * @return	The number of polynomials |X|. X={ y€Zp[x]/<x^n+1> : L1(y) = norm_1 & coeff(y) = num_coeffs}.
+ */
 ZZ count_elements_with_L1_and_coeffs(int element_length, int norm_1, int num_coeffs){
+	if(element_length < 1||norm_1 < 0||num_coeffs < 0){
+		return ZZ::zero();
+	}
+	if(element_length>0 && norm_1 == 0 && num_coeffs == 0){
+		return to_ZZ(1);
+	}
+
 	return ZZ_binomial(to_ZZ(norm_1 -1),to_ZZ(num_coeffs-1))*ZZ_binomial(to_ZZ(element_length),to_ZZ(num_coeffs))*power(to_ZZ(2),num_coeffs);
 }
 
-/* Generate polynomial whose L1-norm is equal to "L1_value". */
+/**
+ * Generate polynomial as element of polynomial ring Zp[x]/<x^n+1>, whose L1-norm is equal to "L1_value".
+ * @param polynomial_degree		Maximal degree of polynomials (n).
+ * @param L1_value				L1-norm of polynomial to generate.
+ * @param modulus				Integer modulus p.
+ * @return	Random polynomial y from ring Zp[x]/<x^n+1> and L1(y) = L1_value.
+ */
 ZZ_pE random_element_Dc(int polynomial_degree, ZZ L1_value, ZZ modulus){
 
 	ZZ_pX rand_Dc;
@@ -245,34 +303,34 @@ ZZ_pE random_element_Dc(int polynomial_degree, ZZ L1_value, ZZ modulus){
 	return rand_Dc_ZZ_pE;
 }
 
-
-int is_element_Gm(ZZ max_length, ZZ_pE element[], int array_length){
-	for (int index = 0; index < array_length; ++index) {
-		if(Linf_norm_ZZ_pE(element[index])>max_length){
-			cout<<"element["<<index<<"] has length "<<Linf_norm_ZZ_pE(element[index])<<" which is greater as max_length "<<max_length<<".\tAbort!\n";
-			return EXIT_FAILURE;
+/**
+ * Determine if all elements of polynomial array have a maximal Linf norm less or equal to maxLinf.
+ * @param maxLinf				Maximal Linf norm.
+ * @param polynomialArray		Array with polynomials.
+ * @param polynomialArrayLength	Number of polynomials in array.
+ * @return	True if Linf norm of all array elements is less or equal to maxLinf, else false.
+ */
+bool is_element_with_max_Linf(ZZ maxLinf, ZZ_pE polynomialArray[], int polynomialArrayLength){
+	if(maxLinf < 0||polynomialArrayLength < 1||polynomialArray == NULL){
+		cout<<"max_length"<<maxLinf<<"\tarray_length:"<<polynomialArrayLength<<"\telement:"<<polynomialArray<<"\n";
+		return false;
+	}
+	for (int index = 0; index < polynomialArrayLength; ++index) {
+		if(Linf_norm_ZZ_pE(polynomialArray[index])>maxLinf){
+			cout<<"polynomialArray["<<index<<"] has length "<<Linf_norm_ZZ_pE(polynomialArray[index])<<" which is greater as max_length "<<maxLinf<<".\tAbort!\n";
+			return false;
 		}
 	}
-
-	return EXIT_SUCCESS;
+	return true;
 }
 
-int is_element_Gm(int PP_m, ZZ max_length, vector<ZZ_pE> array){
-
-	if(array.size() != PP_m){
-			return EXIT_FAILURE;
-	}
-
-	for (int index = 0; index < array.size(); ++index) {
-		if(Linf_norm_ZZ_pE(array.at(index)) > max_length){
-			cout<<"element["<<index<<"] has length "<<Linf_norm_ZZ_pE(array.at(index))<<" which is greater as max_length "<<max_length<<".\tAbort!\n";
-			return EXIT_FAILURE;
-		}
-	}
-
-	return EXIT_SUCCESS;
-}
-
+/**
+ * Convert an array with ZZ_pE elements (polynomials) to a char array.
+ * @param ZZ_pE_array		Pointer to array with ZZ_pE elements to convert.
+ * @param number_of_ZZ_pE	Number of elements in array.
+ * @param length_char		Pointer to integer, where to store number of converted chars.
+ * @return	Pointer to char array with converted elements.
+ */
 unsigned char* convert_ZZ_pE_array_to_char_array(ZZ_pE *ZZ_pE_array, int number_of_ZZ_pE, unsigned long long* length_char){
 	// get length of most length coeff in bits
 	ZZ most_length_coeff;
@@ -314,47 +372,14 @@ unsigned char* convert_ZZ_pE_array_to_char_array(ZZ_pE *ZZ_pE_array, int number_
 	return char_array;
 }
 
-unsigned char* convert_ZZ_pE_array_to_char_array(vector<ZZ_pE> ZZ_pE_array, unsigned long long* length_char){
-	// get length of most length coeff in bits
-	ZZ most_length_coeff;
-	long bitlength, bytelength;
-	ZZ_pX temp_ZZ_pX;
-	ZZ_p koeff_x;
-	bool sign;
-	int degree = ZZ_pE_array.at(0).degree();
-
-	for (int index = 0; index < ZZ_pE_array.size(); ++index) {
-		most_length_coeff = Linf_norm_ZZ_pE(ZZ_pE_array.at(index));
-	}
-	bitlength = NumBits(most_length_coeff);
-
-	if(bitlength%8){
-		bytelength = (bitlength - bitlength%8)/8 +1;
-	}else{
-		bytelength = bitlength/8;
-	}
-
-	*length_char = bytelength*degree*(ZZ_pE_array.size());
-	unsigned char* char_array = (unsigned char *)malloc(*length_char*sizeof(unsigned char));
-
-	for (int index_ZZ_pE = 0; index_ZZ_pE < ZZ_pE_array.size(); ++index_ZZ_pE) {
-		temp_ZZ_pX = rep(ZZ_pE_array.at(index_ZZ_pE));
-		for (int index_coefficient = 0; index_coefficient < degree; ++index_coefficient) {
-			koeff_x = coeff(temp_ZZ_pX,index_coefficient);
-			sign = false;
-			if(rep(koeff_x)*2 > koeff_x.modulus()){
-				koeff_x = to_ZZ_p((koeff_x.modulus()-rep(koeff_x)));
-				sign = true;
-			}
-			BytesFromZZ(&char_array[(index_ZZ_pE*degree+index_coefficient)*bytelength],rep(koeff_x),bytelength);	// return koeff as char-array
-			if(sign){
-				char_array[(index_ZZ_pE*degree+index_coefficient+1)*bytelength-1] |=(1<<7);
-			}
-		}
-	}
-	return char_array;
-}
-
+/**
+ * Convert array with ZZ_pE elements (polynomials) to char array.
+ * @param ZZ_pE_array		Pointer to array with ZZ_pE elements to convert.
+ * @param number_of_ZZ_pE	Number of elements in array.
+ * @param length_char		Pointer to integer, where to store number of converted chars.
+ * @param char_array		Pointer to char array with converted elements.
+ * @return 0 if successful, -1 else.
+ */
 int convert_ZZ_pE_array_to_char_array(NTL::ZZ_pE *ZZ_pE_array, int number_of_ZZ_pE, unsigned long long* length_char, unsigned char* char_array){
 	// get length of most length coeff in bits
 	ZZ most_length_coeff;
@@ -396,7 +421,15 @@ int convert_ZZ_pE_array_to_char_array(NTL::ZZ_pE *ZZ_pE_array, int number_of_ZZ_
 	return EXIT_SUCCESS;
 }
 
-/* Convert a char-array in a ZZ_pE-array. */
+/**
+ * Convert char-array (with converted ZZ_pE elements) back to ZZ_pE-array.
+ * @param ZZ_pE_array			Pointer to ZZ_pE array.
+ * @param char_array			Pointer to char array.
+ * @param length_char			Number of chars in char array.
+ * @param number_of_ZZ_pE		Number of stored ZZ_pE elements in char array.
+ * @param polynomial_degree		Maximal degree of stored ZZ_pE elements.
+ * @return	0 if successful, -1 else.
+ */
 int convert_char_array_to_ZZ_pE_array(NTL::ZZ_pE *ZZ_pE_array,unsigned char* char_array,unsigned long long length_char, int number_of_ZZ_pE, int polynomial_degree){
 	ZZ koeff_ZZ;
 	ZZ_pX temp_ZZ_pX;
@@ -432,42 +465,36 @@ int convert_char_array_to_ZZ_pE_array(NTL::ZZ_pE *ZZ_pE_array,unsigned char* cha
 	return EXIT_SUCCESS;
 }
 
-/* Store a char-array in a file. */
-//int save_char_array_in_file(unsigned char* char_array, long* length_char, char * filename);
-
-/* Restore a char-array from file. */
-//int restore_char_array_from_file(unsigned char* char_array, long* length_char, char * filename);
-
-//int convert_char_array_in_element_Dc();
-
-/* Return a random element of polynomial ring R, whose Linf-norm is equal to parameter length_Linf. */
-int random_element_R_with_Linf(NTL::ZZ length_Linf, NTL::ZZ_pE* element){
+/**
+ * Return a random element of polynomial ring Zp[x]/<x^n+1>, whose Linf-norm is equal to parameter length_Linf.
+ * @param length_Linf	Desired Linf norm of element.
+ * @return Random polynomial y of ring Zp[x]/<x^n+1> with Linf(y) = length_Linf.
+ */
+NTL::ZZ_pE random_element_R_with_Linf(NTL::ZZ length_Linf){
 	ZZ_pX temp;
 	ZZ_pBak bak;
-	bak.save();					// store current modulus of ZZ_pE to bak
+	bak.save();					// store current modulus of ZZ_p to bak
 
 	ZZ_p::init(length_Linf);	// set modulus to sigma+1
 
-	temp = rep(random_ZZ_pE());	//
+	for(long index_power = 0; index_power < ZZ_pE::degree();index_power++){
+		if(rand()&1){
+			SetCoeff(temp, index_power,random_ZZ_p());
+		}else{
+			SetCoeff(temp, index_power,random_ZZ_p()*(-1));
+		}
+	}
 
 	bak.restore();				// set previous modulus back
 
-	int random_int;
-
-	for (unsigned int coeff_index = 0; coeff_index < element->degree()/(sizeof(int)*8); ++coeff_index) {
-		random_int = random();
-		for (unsigned char bit_index = 0; bit_index < 32; ++bit_index) {
-			if((random_int>>bit_index)&1){
-				SetCoeff(temp, coeff_index*32+bit_index, coeff(temp,coeff_index*32+bit_index)*(-1));
-			}
-		}
-	}
-	*element = to_ZZ_pE(temp);
-
-	return EXIT_SUCCESS;
+	return to_ZZ_pE(temp);
 }
 
-/* Return the number of polynomial coefficients which are not 0. */
+/**
+ * Return the number of polynomial coefficients which are not 0.
+ * @param polynomial	Polynomial of polynomial ring Zp[x]/<x^n+1>.
+ * @return	Number of polynomial coefficients unequal to 0.
+ */
 int num_of_coeff_not_0(NTL::ZZ_pE polynomial){
 	int result = 0;
 	ZZ_pX temp_ZZ_pX = rep(polynomial);
