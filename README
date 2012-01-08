@@ -1,3 +1,5 @@
 This is a source code for implementation of signature function based on lattices.
-The source for this implementation is a paper "Fiat-Shamir with aborts: Applications to lattices and factoring-based signatures" at Asiacrypt'09 from Vadim Lyubashevsky. 
+The source for this implementation is a paper 
+"Fiat-Shamir with aborts: Applications to lattices and factoring-based signatures" 
+at Asiacrypt'09 from Vadim Lyubashevsky. 
 This implementation make use of the following libraries: OpenSSL, NTL, GMP.
