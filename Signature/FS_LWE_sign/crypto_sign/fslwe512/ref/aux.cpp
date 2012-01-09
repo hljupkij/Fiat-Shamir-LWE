@@ -96,6 +96,32 @@ ZZ Linf_norm_ZZ_pE(ZZ_pE polynomial){
 	return result;
 }
 
+/** Return the highest coefficient of polynomial.
+ * @param 	polynomial		Polynomial of class Zp[x]/<x^n+1> which should be analyzed.
+ * @return  The highest coefficient in range [-p/2,..,p/2] of polynomial.
+ **/
+ZZ Linf_norm_ZZ_pX(ZZ_pX polynomial){
+	ZZ result, modulus, coeff_x_ZZ;
+	ZZ_p coeff_x_ZZp;
+	long degree = deg(polynomial);
+
+	result = 0;
+	modulus = (coeff(polynomial,0)).modulus();
+
+	for (int x_deg = 0; x_deg < degree; ++x_deg) {
+		coeff_x_ZZp = coeff(polynomial,x_deg);
+		coeff_x_ZZ = rep(coeff_x_ZZp);
+		if(coeff_x_ZZ > modulus/2){
+			coeff_x_ZZ = modulus - coeff_x_ZZ;
+		}
+		if(coeff_x_ZZ > result){
+			result = coeff_x_ZZ;
+		}
+	}
+
+	return result;
+}
+
 /**
  * Compare two ZZ_pE-arrays.
  *
@@ -172,6 +198,30 @@ ZZ L1_norm_ZZ_pE(ZZ_pE polynomial){
 			coeff_x_ = modulus - coeff_x_;
 		}
 		result += coeff_x_;
+	}
+	return result;
+}
+
+/**
+ *	Compute the L1-Norm of polynomial.
+ * @param polynomial	Polynomial of class Zp[x]/<x^n+1> which should be analyzed.
+ * @return The sum of polynomial coefficients in range [-p/2,..,p/2].
+ */
+ZZ L1_norm_ZZ_pX(ZZ_pX polynomial){
+	ZZ result, modulus, coeff_x_ZZ;
+	ZZ_p coeff_x_ZZ_p;
+
+	result = 0;
+	modulus = (coeff(polynomial,0)).modulus();
+	long degree = deg(polynomial);
+
+	for (int x_deg = 0; x_deg < degree; ++x_deg) {
+		coeff_x_ZZ_p = coeff(polynomial,x_deg);
+		coeff_x_ZZ = rep(coeff_x_ZZ_p);
+		if(coeff_x_ZZ > modulus/2){
+			coeff_x_ZZ = modulus - coeff_x_ZZ;
+		}
+		result += coeff_x_ZZ;
 	}
 	return result;
 }
@@ -505,3 +555,16 @@ int num_of_coeff_not_0(NTL::ZZ_pE polynomial){
 	return result;
 }
 
+/**
+ * Return the number of polynomial coefficients which are not 0.
+ * @param polynomial	Polynomial of polynomial ring Zp[x]/<x^n+1>.
+ * @return	Number of polynomial coefficients unequal to 0.
+ */
+int num_of_coeff_not_0(NTL::ZZ_pX polynomial){
+	int result = 0;
+
+	for (long int index_coeff = 0; index_coeff < deg(polynomial); ++index_coeff) {
+		if(coeff(polynomial,index_coeff) != ZZ_pE::zero())	result++;
+	}
+	return result;
+}

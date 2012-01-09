@@ -47,6 +47,13 @@ int init_random(int number_chars);
 NTL::ZZ Linf_norm_ZZ_pE(NTL::ZZ_pE polynomial);
 
 /**
+ * Determine the highest coefficient of polynomial.
+ * @param 	polynomial Polynomial to analyze.
+ * @return the highest coefficient of polynomial.
+ **/
+NTL::ZZ Linf_norm_ZZ_pX(NTL::ZZ_pX polynomial);
+
+/**
  * Return the sum of absolute value of polynomial coefficients.
  * Polynomial coefficients are in range [-mod/2,...,mod/2].
  * @param polynomial Polynomial to analyze.
@@ -54,6 +61,13 @@ NTL::ZZ Linf_norm_ZZ_pE(NTL::ZZ_pE polynomial);
  */
 NTL::ZZ L1_norm_ZZ_pE(NTL::ZZ_pE polynomial);
 
+/**
+ * Return the sum of absolute value of polynomial coefficients.
+ * Polynomial coefficients are in range [-mod/2,...,mod/2].
+ * @param polynomial Polynomial to analyze.
+ * @return The sum of polynomial coefficients.
+ */
+NTL::ZZ L1_norm_ZZ_pX(NTL::ZZ_pX polynomial);
 /**
  * Return number of elements whose have L1-norm equal to norm_1.
  * L1|x| = norm_1
@@ -97,6 +111,13 @@ bool is_element_with_max_Linf(int PP_m, NTL::ZZ max_Linf, std::vector<NTL::ZZ_pE
  * @return The number of polynomial coefficients unequal 0.
  */
 int num_of_coeff_not_0(NTL::ZZ_pE polynomial);
+
+/**
+ *	Return the number of polynomial coefficients unequal 0.
+ * @param polynomial 	Polynomial to analyze.
+ * @return The number of polynomial coefficients unequal 0.
+ */
+int num_of_coeff_not_0(NTL::ZZ_pX polynomial);
 
 /**
  * Return the number of polynomials with certain L1-norm and certain number of coefficients.

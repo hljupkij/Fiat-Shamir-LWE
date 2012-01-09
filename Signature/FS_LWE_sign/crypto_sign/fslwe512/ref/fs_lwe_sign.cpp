@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+#include <algorithm>
 
 #include <openssl/sha.h>
 #include <openssl/evp.h>
@@ -113,17 +114,16 @@ int generate_random_hash_function(ZZ_pE *random_hash_function, int number_of_ZZ_
  */
 ZZ_pE generate_element_Dc(ZZ num_coeff, ZZ L1_value, unsigned char* charArray, unsigned int charArraySize){
 
-	unsigned int power_, bit_length;
-	bool high_byte, element_in_vector;
-	unsigned char koef=0,index_byte_block=0, index_byte_in_block=0, random_power;
+	unsigned int randomPower, bit_length;
+	unsigned char koef=0,index_byte_block=0, index_byte_in_block=0, randomSettledPower, high_byte;
 
 	ZZ_pX temp_res = ZZ_pX();
-	ZZ_pE result = ZZ_pE();
 	std::vector<unsigned int> setted_coefficients;
+
 	// while L1(element) != L1_value && inside of char array
-	while((L1_norm_ZZ_pE(result) != L1_value)&&((unsigned int)((BLOCKSIZE +1)*index_byte_block+index_byte_in_block) < charArraySize)){
+	while((L1_norm_ZZ_pX(temp_res) != L1_value)&&((unsigned int)((BLOCKSIZE +1)*index_byte_block+index_byte_in_block) < charArraySize)){
 		// While number of elements coefficients < num_coeff
-		while((num_of_coeff_not_0(result) < num_coeff)&&((unsigned int)((BLOCKSIZE +1)*index_byte_block+index_byte_in_block) < charArraySize)){
+		while((num_of_coeff_not_0(temp_res) < num_coeff)&&((unsigned int)((BLOCKSIZE +1)*index_byte_block+index_byte_in_block) < charArraySize)){
 
 			if(index_byte_in_block%BLOCKSIZE == 0){
 				koef = charArray[index_byte_block*(BLOCKSIZE +1)];	// byte with highByte's and coefficients
@@ -132,49 +132,39 @@ ZZ_pE generate_element_Dc(ZZ num_coeff, ZZ L1_value, unsigned char* charArray, u
 			}
 
 			high_byte = (koef>>((BITS_HIGH_BYTE+1)*index_byte_in_block))&((1<<BITS_HIGH_BYTE) - 1);
-			power_ = charArray[index_byte_block*(BLOCKSIZE +1)+index_byte_in_block]+high_byte*(1<<8);
+			randomPower = charArray[index_byte_block*(BLOCKSIZE +1)+index_byte_in_block]+high_byte*(1<<8);
 
-			element_in_vector = false;
-			for (unsigned int vector_index = 0; vector_index < setted_coefficients.size(); ++vector_index) {
-				if(setted_coefficients.at(vector_index) == power_){
-					element_in_vector = true;
-				}
-			}
-			if(!element_in_vector){	// power_ isn't in set
-				setted_coefficients.push_back(power_);
+			if(std::find(setted_coefficients.begin(), setted_coefficients.end(), randomPower) == setted_coefficients.end()){
+				// element is not in set
+				setted_coefficients.push_back(randomPower);
 				if((koef>>((BITS_HIGH_BYTE+1)*(index_byte_in_block+1)-1))&1){
-					SetCoeff(temp_res,power_, 1);
+					SetCoeff(temp_res,randomPower, 1);
 				}else{
-					SetCoeff(temp_res,power_,(-1));
+					SetCoeff(temp_res,randomPower,(-1));
 				}
-			}else{
 			}
-			result = to_ZZ_pE(temp_res);
 			index_byte_in_block++;
 		}
 
-		if((L1_value > num_coeff)&&(L1_norm_ZZ_pE(to_ZZ_pE(temp_res)) < L1_value)){
-			// raise one coefficient
-			bit_length = (int)log2(setted_coefficients.size())+1;
+		if((L1_value > num_coeff)&&(L1_norm_ZZ_pX(temp_res) < L1_value)){	// raise one coefficient
 
-			random_power = (charArray[index_byte_block*(BLOCKSIZE +1)+index_byte_in_block])&((1<<bit_length) - 1);
+			bit_length = (int)ceil(log2(setted_coefficients.size()));
+			randomSettledPower = (charArray[index_byte_block*(BLOCKSIZE +1)+index_byte_in_block])&((1<<bit_length) - 1);
 
-			if(random_power < setted_coefficients.size()){
-				ZZ_p coeff_old = coeff(temp_res,setted_coefficients.at(random_power));
+			if(randomSettledPower < setted_coefficients.size()){
+				ZZ_p coeff_old = coeff(temp_res, setted_coefficients.at(randomSettledPower));
 
 				if(2*rep(coeff_old) > coeff_old.modulus()){		// get sign of old coefficient
-					SetCoeff(temp_res,setted_coefficients.at(random_power),coeff_old-1);
+					SetCoeff(temp_res, setted_coefficients.at(randomSettledPower),coeff_old-1);
 				}else{
-					SetCoeff(temp_res,setted_coefficients.at(random_power),coeff_old+1);
+					SetCoeff(temp_res, setted_coefficients.at(randomSettledPower),coeff_old+1);
 				}
 			}
 		}
-
-		result = to_ZZ_pE(temp_res);
 		index_byte_in_block++;
 	}
 
-	return result;
+	return to_ZZ_pE(temp_res);
 }
 
 /**
@@ -257,10 +247,10 @@ int random_element_Dy(PublicParameter PublicParam, ZZ_pE* randomDy){
  * @return					Random element of ring Dc.
  */
 ZZ_pE RandomOracle_Dc(
-		PublicParameter PublicParam,
-		ZZ_pE 			LWE_hash_rand,
-		unsigned char* 	message,
-		unsigned long long message_length
+		PublicParameter 	PublicParam,
+		ZZ_pE 				LWE_hash_rand,
+		unsigned char* 		message,
+		unsigned long long 	message_length
 ){
 
 	unsigned char md_value[EVP_MAX_MD_SIZE];	// message digest
@@ -294,7 +284,7 @@ ZZ_pE RandomOracle_Dc(
 		}
 	}
 
-	number -= count_elements_up_to_L1(PublicParam.n, L1_norm-1);
+	number -= L1_elements[L1_norm-1];
 	ZZ sum_elements = L1_elements[L1_norm]-L1_elements[L1_norm-1];
 	ZZ temp2;
 	// get number of coefficients <= L1-length

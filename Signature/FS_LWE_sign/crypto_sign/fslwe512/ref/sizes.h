@@ -8,10 +8,10 @@
 #ifndef SIZES_H_
 #define SIZES_H_
 
-#define PUBLIC_PARAMETER_N 			512					// [log2(N)] = [9]  = 	10
-#define PUBLIC_PARAMETER_M 			4					// [log2(M)] = [2,...] = 3
-#define PUBLIC_PARAMETER_K 			24					// [log2(K)] = [4,..] = 5
-#define PUBLIC_PARAMETER_SIGMA 		127					// [log2(SIGMA)] = [6,9..] = 11
+#define PUBLIC_PARAMETER_N 			1024					// [log2(N)] = [9]  = 	10
+#define PUBLIC_PARAMETER_M 			8						// [log2(M)] = [2,...] = 3
+#define PUBLIC_PARAMETER_K 			21						// [log2(K)] = [4,..] = 5
+#define PUBLIC_PARAMETER_SIGMA 		2047					// [log2(SIGMA)] = [6,9..] = 11
 
 //#define LOG2_P 						(ceil(log2(PUBLIC_PARAMETER_SIGMA))+1)*PUBLIC_PARAMETER_M
 
