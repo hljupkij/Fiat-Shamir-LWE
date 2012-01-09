@@ -3,3 +3,4 @@ The source for this implementation is a paper
 "Fiat-Shamir with aborts: Applications to lattices and factoring-based signatures" 
 at Asiacrypt'09 from Vadim Lyubashevsky. 
 This implementation make use of the following libraries: OpenSSL, NTL, GMP.
+Each member of function family differs only in bitlength of keys.
