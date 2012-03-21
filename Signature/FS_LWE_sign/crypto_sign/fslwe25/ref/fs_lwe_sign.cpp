@@ -33,32 +33,55 @@ NTL_CLIENT
  */
 
 NTL::ZZ L1_elements[] = {
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,0),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,1),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,2),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,3),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,4),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,5),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,6),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,7),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,8),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,9),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,10),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,11),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,12),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,13),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,14),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,15),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,16),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,17),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,18),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,19),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,20),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,21),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,22),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,23),
-	count_elements_up_to_L1(PUBLIC_PARAMETER_N,24)
+	elementsL1Max(PUBLIC_PARAMETER_N,0),
+	elementsL1Max(PUBLIC_PARAMETER_N,1),
+	elementsL1Max(PUBLIC_PARAMETER_N,2),
+	elementsL1Max(PUBLIC_PARAMETER_N,3),
+	elementsL1Max(PUBLIC_PARAMETER_N,4),
+	elementsL1Max(PUBLIC_PARAMETER_N,5),
+	elementsL1Max(PUBLIC_PARAMETER_N,6),
+	elementsL1Max(PUBLIC_PARAMETER_N,7),
+	elementsL1Max(PUBLIC_PARAMETER_N,8),
+	elementsL1Max(PUBLIC_PARAMETER_N,9),
+	elementsL1Max(PUBLIC_PARAMETER_N,10),
+	elementsL1Max(PUBLIC_PARAMETER_N,11),
+	elementsL1Max(PUBLIC_PARAMETER_N,12),
+	elementsL1Max(PUBLIC_PARAMETER_N,13),
+	elementsL1Max(PUBLIC_PARAMETER_N,14),
+	elementsL1Max(PUBLIC_PARAMETER_N,15),
+	elementsL1Max(PUBLIC_PARAMETER_N,16),
+	elementsL1Max(PUBLIC_PARAMETER_N,17),
+	elementsL1Max(PUBLIC_PARAMETER_N,18),
+	elementsL1Max(PUBLIC_PARAMETER_N,19),
+	elementsL1Max(PUBLIC_PARAMETER_N,20),
+	elementsL1Max(PUBLIC_PARAMETER_N,21),
+	elementsL1Max(PUBLIC_PARAMETER_N,22),
+	elementsL1Max(PUBLIC_PARAMETER_N,23),
+	elementsL1Max(PUBLIC_PARAMETER_N,24),
+	elementsL1Max(PUBLIC_PARAMETER_N,25),
+	elementsL1Max(PUBLIC_PARAMETER_N,26),
+	elementsL1Max(PUBLIC_PARAMETER_N,27),
+	elementsL1Max(PUBLIC_PARAMETER_N,28),
+	elementsL1Max(PUBLIC_PARAMETER_N,29),
+	elementsL1Max(PUBLIC_PARAMETER_N,30),
+	elementsL1Max(PUBLIC_PARAMETER_N,31),
+	elementsL1Max(PUBLIC_PARAMETER_N,32),
+	elementsL1Max(PUBLIC_PARAMETER_N,33),
+	elementsL1Max(PUBLIC_PARAMETER_N,34),
+	elementsL1Max(PUBLIC_PARAMETER_N,35),
+	elementsL1Max(PUBLIC_PARAMETER_N,36),
+	elementsL1Max(PUBLIC_PARAMETER_N,37),
+	elementsL1Max(PUBLIC_PARAMETER_N,38),
+	elementsL1Max(PUBLIC_PARAMETER_N,39),
+	elementsL1Max(PUBLIC_PARAMETER_N,40),
+	elementsL1Max(PUBLIC_PARAMETER_N,41),
+	elementsL1Max(PUBLIC_PARAMETER_N,42),
+	elementsL1Max(PUBLIC_PARAMETER_N,43),
+	elementsL1Max(PUBLIC_PARAMETER_N,44),
+	elementsL1Max(PUBLIC_PARAMETER_N,45),
+	elementsL1Max(PUBLIC_PARAMETER_N,46)
 };
+
 /*
 // how many bits in higher byte needed to get a random degree, if degree of reduction polynomial > 256
 const unsigned char BITS_HIGH_BYTE = log2(PUBLIC_PARAMETER_N) - 8;
@@ -84,7 +107,7 @@ int generate_sk(PublicParameter PublicParam, ZZ_pE *secret_key){
 	}
 
 	for(int i = 0; i < PublicParam.m; i++){
-		secret_key[i] = random_element_R_with_Linf(to_ZZ(PublicParam.sigma+1));
+		secret_key[i] = randomElementOfRingWithLinfMax(to_ZZ(PublicParam.sigma+1));
 	}
 	return EXIT_SUCCESS;
 }
@@ -118,7 +141,7 @@ int generate_random_hash_function(ZZ_pE *random_hash_function, int number_of_ZZ_
  * @param charArraySize		Number of chars in array.
  * @return	Generated element of ring Dc.
  */
-ZZ_pE generate_element_Dc(ZZ num_coeff, ZZ L1_value, unsigned char* charArray, unsigned int charArraySize){
+ZZ_pE generate_element_maxL1(ZZ num_coeff, ZZ L1_value, unsigned char* charArray, unsigned int charArraySize){
 
 	unsigned int randomPower, bit_length;
 	unsigned char koef=0,index_byte_block=0, index_byte_in_block=0, randomSettledPower, high_byte;
@@ -127,9 +150,9 @@ ZZ_pE generate_element_Dc(ZZ num_coeff, ZZ L1_value, unsigned char* charArray, u
 	std::vector<unsigned int> setted_coefficients;
 
 	// while L1(element) != L1_value && inside of char array
-	while((L1_norm_ZZ_pX(temp_res) != L1_value)&&((unsigned int)((BLOCKSIZE +1)*index_byte_block+index_byte_in_block) < charArraySize)){
+	while((L1Element(temp_res) != L1_value)&&((unsigned int)((BLOCKSIZE +1)*index_byte_block+index_byte_in_block) < charArraySize)){
 		// While number of elements coefficients < num_coeff
-		while((num_of_coeff_not_0(temp_res) < num_coeff)&&((unsigned int)((BLOCKSIZE +1)*index_byte_block+index_byte_in_block) < charArraySize)){
+		while((coeffsNot0(temp_res) < num_coeff)&&((unsigned int)((BLOCKSIZE +1)*index_byte_block+index_byte_in_block) < charArraySize)){
 
 			if(index_byte_in_block%BLOCKSIZE == 0){
 				koef = charArray[index_byte_block*(BLOCKSIZE +1)];	// byte with highByte's and coefficients
@@ -152,7 +175,7 @@ ZZ_pE generate_element_Dc(ZZ num_coeff, ZZ L1_value, unsigned char* charArray, u
 			index_byte_in_block++;
 		}
 
-		if((L1_value > num_coeff)&&(L1_norm_ZZ_pX(temp_res) < L1_value)){	// raise one coefficient
+		if((L1_value > num_coeff)&&(L1Element(temp_res) < L1_value)){	// raise one coefficient
 
 			bit_length = (int)ceil(log2(setted_coefficients.size()));
 			randomSettledPower = (charArray[index_byte_block*(BLOCKSIZE +1)+index_byte_in_block])&((1<<bit_length) - 1);
@@ -238,9 +261,9 @@ int random_element_Dy(PublicParameter PublicParam, ZZ_pE* randomDy){
 	if(randomDy == NULL){
 		return -1;
 	}
-
+// change length to (m*n-2)*sigma*k
 	for(int i = 0; i < PublicParam.m; i++){
-		randomDy[i] = random_element_R_with_Linf(to_ZZ(PublicParam.k*PublicParam.m*PublicParam.n*PublicParam.sigma));
+		randomDy[i] = randomElementOfRingWithLinfMax(to_ZZ(PublicParam.k*PublicParam.sigma*(PublicParam.m*PublicParam.n)));
 	}
 	return EXIT_SUCCESS;
 }
@@ -269,7 +292,7 @@ ZZ_pE RandomOracle_Dc(
 	unsigned char run_index = 0;
 
 	// convert LWE-Hash into char-array for hash-function
-	char_arr =  convert_ZZ_pE_array_to_char_array(&LWE_hash_rand, 1, &length_char_arr);
+	char_arr =  ZZpEArrayToCharArray(&LWE_hash_rand, 1, &length_char_arr);
 
 	// copy message into a new array
 	unsigned char* message_with_lwe = (unsigned char*)malloc(sizeof(char)*(size_t)(message_length + length_char_arr+1));
@@ -308,7 +331,7 @@ ZZ_pE RandomOracle_Dc(
 	ZZ temp2;
 	// get number of coefficients <= L1-length
 	for (int index_num_coeff = L1_norm; index_num_coeff >= 1; index_num_coeff--){
-		temp2 = count_elements_with_L1_and_coeffs(PublicParam.n, L1_norm, index_num_coeff);
+		temp2 = elementsL1Coeffs(PublicParam.n, L1_norm, index_num_coeff);
 		if((sum_elements - temp2 <= number) && (sum_elements > number)){
 			num_coeff = index_num_coeff;
 			break;
@@ -317,7 +340,7 @@ ZZ_pE RandomOracle_Dc(
 	}
 
 	// Convert 512-Bit String (md_value) into an element of Dc
-	ZZ_pE result =  generate_element_Dc(to_ZZ(num_coeff), to_ZZ(L1_norm), &md_value[const_BYTES_NUMBER], (unsigned int) EVP_MAX_MD_SIZE-const_BYTES_NUMBER);
+	ZZ_pE result =  generate_element_maxL1(to_ZZ(num_coeff), to_ZZ(L1_norm), &md_value[const_BYTES_NUMBER], (unsigned int) EVP_MAX_MD_SIZE-const_BYTES_NUMBER);
 
 	// delete temporary arrays and return a result
 	free(char_arr);
@@ -351,7 +374,7 @@ int verify_signatur(
 
 	// is sign_z element of G^m ?
 	ZZ max_length = to_ZZ(PublicParameter.sigma*PublicParameter.k*((PublicParameter.m*PublicParameter.n)-1));
-	if(!is_element_with_max_Linf(max_length, SignaturePart_z, length_Sign_z)){
+	if(!isElementOfRingWithLinfMax(max_length, SignaturePart_z, length_Sign_z)){
 		printf("Verification failed, response is not an element of G^m! Abort!\n");
 		return -1;
 	}
@@ -397,7 +420,7 @@ int sign_message(
 		for (int index = 0; index < PublicParam.m; ++index) {
 			SignaturePart_z[index] = SecretKey[index]*SignaturePart_e[0] + random_Dy[index];
 		}
-	}while(!is_element_with_max_Linf(max_length, SignaturePart_z, PublicParam.m));
+	}while(!isElementOfRingWithLinfMax(max_length, SignaturePart_z, PublicParam.m));
 
 	// to verify the signature remove the comment
 //	ZZ_pE PK = LWE_hash(PublicParam, HashPolynomials, SecretKey, PublicParam.m);
@@ -412,7 +435,7 @@ int sign_message(
  * @param sk	Char array to store secret key and polynomials of LWE hash function.
  * @return	0 if successful, -1 else.
  */
-int crypto_sign_keypair(unsigned char *pk, unsigned char *sk){
+int FSLWE25_crypto_sign_keypair(unsigned char *pk, unsigned char *sk){
 
 	bool result;
 	struct PublicParameter PP = {PUBLIC_PARAMETER_N, PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_SIGMA,PUBLIC_PARAMETER_K};
@@ -456,7 +479,7 @@ int crypto_sign_keypair(unsigned char *pk, unsigned char *sk){
  * @param sk	Pointer to secret key.
  * @return		0 if successful, -1 else.
  */
-int crypto_sign(unsigned char *sm,unsigned long long *smlen, const unsigned char *m,unsigned long long mlen, const unsigned char *sk){
+int FSLWE25_crypto_sign(unsigned char *sm,unsigned long long *smlen, const unsigned char *m,unsigned long long mlen, const unsigned char *sk){
 	struct PublicParameter PP = {PUBLIC_PARAMETER_N, PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_SIGMA, PUBLIC_PARAMETER_K};
 
 	unsigned long long length;
@@ -471,8 +494,8 @@ int crypto_sign(unsigned char *sm,unsigned long long *smlen, const unsigned char
 	NTL::ZZ_pE hash_polynomial[PUBLIC_PARAMETER_M];
 	NTL::ZZ_pE sk_ZZ_pE[PUBLIC_PARAMETER_M];
 
-	convert_char_array_to_ZZ_pE_array(hash_polynomial, (unsigned char*)&sk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION, PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
-	convert_char_array_to_ZZ_pE_array(sk_ZZ_pE, (unsigned char*)&sk[BYTES_PRIMENUMBER+BYTES_HASHFUNCTION],BYTES_SECRETKEY,PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
+	charArrayToZZpEArray(hash_polynomial, (unsigned char*)&sk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION, PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
+	charArrayToZZpEArray(sk_ZZ_pE, (unsigned char*)&sk[BYTES_PRIMENUMBER+BYTES_HASHFUNCTION],BYTES_SECRETKEY,PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
 
 	int result = sign_message(PP, (unsigned char*) m, mlen, sk_ZZ_pE, hash_polynomial, &sign_e, sign_z);
 	/* copy message and signature */
@@ -492,7 +515,7 @@ int crypto_sign(unsigned char *sm,unsigned long long *smlen, const unsigned char
  * @param pk	Pointer to public key.
  * @return		0 if successful, -1 else.
  */
-int crypto_sign_open(unsigned char *m, unsigned long long *mlen, const unsigned char *sm,unsigned long long smlen, const unsigned char *pk){
+int FSLWE25_crypto_sign_open(unsigned char *m, unsigned long long *mlen, const unsigned char *sm,unsigned long long smlen, const unsigned char *pk){
 	struct PublicParameter PP = {PUBLIC_PARAMETER_N, PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_SIGMA,PUBLIC_PARAMETER_K};
 
 	NTL::ZZ prime_number = NTL::ZZFromBytes(pk, BYTES_PRIMENUMBER);
@@ -505,10 +528,10 @@ int crypto_sign_open(unsigned char *m, unsigned long long *mlen, const unsigned 
 	*mlen = smlen - BYTES_SIGNATUR_E - BYTES_SIGNATUR_Z;
 	memcpy(m, sm, (size_t) *mlen);	// copy chars from signed message
 
-	convert_char_array_to_ZZ_pE_array(hash_polynomial,(unsigned char*)&pk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION,PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_N);
-	convert_char_array_to_ZZ_pE_array(&pk_ZZ_pE,(unsigned char*)&pk[BYTES_PRIMENUMBER+BYTES_HASHFUNCTION],BYTES_PUBLICKEY,1,PUBLIC_PARAMETER_N);
-	convert_char_array_to_ZZ_pE_array(sign_z,(unsigned char *) (sm+*mlen),BYTES_SIGNATUR_Z, PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_N);
-	convert_char_array_to_ZZ_pE_array(&sign_e,(unsigned char *) (sm+*mlen+BYTES_SIGNATUR_Z), BYTES_SIGNATUR_E, 1, PUBLIC_PARAMETER_N);
+	charArrayToZZpEArray(hash_polynomial,(unsigned char*)&pk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION,PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_N);
+	charArrayToZZpEArray(&pk_ZZ_pE,(unsigned char*)&pk[BYTES_PRIMENUMBER+BYTES_HASHFUNCTION],BYTES_PUBLICKEY,1,PUBLIC_PARAMETER_N);
+	charArrayToZZpEArray(sign_z,(unsigned char *) (sm+*mlen),BYTES_SIGNATUR_Z, PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_N);
+	charArrayToZZpEArray(&sign_e,(unsigned char *) (sm+*mlen+BYTES_SIGNATUR_Z), BYTES_SIGNATUR_E, 1, PUBLIC_PARAMETER_N);
 
 	return verify_signatur(PP, m, sign_z, &sign_e, hash_polynomial, pk_ZZ_pE, PUBLIC_PARAMETER_M, *mlen);
 }

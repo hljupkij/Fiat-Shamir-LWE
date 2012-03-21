@@ -10,6 +10,7 @@
 #include "sizes.h"
 #include "api.h"
 #include "fs_lwe_sign.h"
+#include "cpucycles.h"
 #include "aux.h"
 
 #include <stdio.h>
@@ -122,19 +123,21 @@ int main()
 	unsigned char sk_[CRYPTO_SECRETKEYBYTES];
 	unsigned char pk_[CRYPTO_PUBLICKEYBYTES];
 
-	unsigned long long length_signed_message, length_message;
+	unsigned long long length_signed_message, length_message, start =0, end=0, cycles_key_generation=0, cycles_signature=0, cycles_verificaton=0;
 	unsigned char* signed_message = (unsigned char*) malloc(sizeof(char)*((unsigned long)size+CRYPTO_BYTES));
 	unsigned char* message = (unsigned char*)malloc(sizeof(char)*(unsigned long)size);
 
 	for (int var = 0; var < number_tests; ++var) {
 //		printf("Start test Nr.%i\n",var);
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_start);
-		crypto_sign_keypair(pk_,sk_);
+		start = cpucycles();
+		FSLWE25_crypto_sign_keypair(pk_,sk_);
+		cycles_key_generation += cpucycles()- start;
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&time_end);
 //		printf("Generating sk and pk takes about %.5f-seconds.\n",(float)((time_end.tv_sec- time_start.tv_sec)+((float)(time_end.tv_nsec-time_start.tv_nsec))/1000000000));
 		time_key_generation += (float)((time_end.tv_sec- time_start.tv_sec)+((float)(time_end.tv_nsec-time_start.tv_nsec))/1000000000);
 
-/*		file_out.open("public_key",ios::binary);
+		file_out.open("public_key",ios::binary);
 		if(file_out.is_open()){
 			file_out.write((const char *)pk_, CRYPTO_PUBLICKEYBYTES);
 		}
@@ -144,36 +147,40 @@ int main()
 		if(file_out.is_open()){
 			file_out.write((const char *)sk_, CRYPTO_SECRETKEYBYTES);
 		}
-		file_out.close();*/
+		file_out.close();
 
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&time_start);
-		crypto_sign(signed_message, &length_signed_message, (const unsigned char*)memblock,(unsigned long long) size, (const unsigned char*)sk_);
+		start = cpucycles();
+		FSLWE25_crypto_sign(signed_message, &length_signed_message, (const unsigned char*)memblock,(unsigned long long) size, (const unsigned char*)sk_);
+		cycles_signature += cpucycles()- start;
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&time_end);
 //		printf("Computing signature takes about %.5f-seconds.\n",(float)((time_end.tv_sec- time_start.tv_sec)+((float)(time_end.tv_nsec-time_start.tv_nsec))/1000000000));
 		time_signature += (float)((time_end.tv_sec- time_start.tv_sec)+((float)(time_end.tv_nsec-time_start.tv_nsec))/1000000000);
 
-/*		file_out.open("signature",ios::binary);
+		file_out.open("signature",ios::binary);
 		if(file_out.is_open()){
 			file_out.write((const char *)signed_message, length_signed_message);
 		}
-		file_out.close();*/
+		file_out.close();
 
 		ZZ_pE _e;
 
-		convert_char_array_to_ZZ_pE_array(&_e, &signed_message[size + BYTES_SIGNATUR_Z], BYTES_SIGNATUR_E, 1, PP.n);
-		ZZ L1_e =  L1_norm_ZZ_pE(_e);
-		int num_e = num_of_coeff_not_0(_e);
+		charArrayToZZpEArray(&_e, &signed_message[size + BYTES_SIGNATUR_Z], BYTES_SIGNATUR_E, 1, PP.n);
+		ZZ L1_e =  L1Element(rep(_e));
+		int num_e = coeffsNot0(rep(_e));
 		L1_stat[to_int(L1_e)]++;
 		Koeff_stat[num_e]++;
 
 
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&time_start);
-		if(crypto_sign_open(message, &length_message, signed_message, length_signed_message, pk_)){
+		start = cpucycles();
+		if(FSLWE25_crypto_sign_open(message, &length_message, signed_message, length_signed_message, pk_)){
 			printf("[%i]Verification not successful!\n",var);
 			break;
 		}else{
 //			printf("Verification successful!\n");
 		}
+		cycles_verificaton += cpucycles()- start;
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&time_end);
 //		printf("Verification takes about %.5f-seconds.\n",(float)((time_end.tv_sec- time_start.tv_sec)+((float)(time_end.tv_nsec-time_start.tv_nsec))/1000000000));
 		time_verification += (float)((time_end.tv_sec- time_start.tv_sec)+((float)(time_end.tv_nsec-time_start.tv_nsec))/1000000000);
@@ -188,9 +195,9 @@ int main()
 	}
 
 	printf("Mean time for %i-tests and message of size:%i\n",number_tests,(int)size);
-	printf("Key generation: %.5f s\n",(time_key_generation/number_tests));
-	printf("Signing: %.5f s\n",(time_signature/number_tests));
-	printf("Verification: %.5f s\n",(time_verification/number_tests));
+	printf("Key generation: %.5f s\t cycles: %llu\n",(time_key_generation/number_tests),(cycles_key_generation/number_tests));
+	printf("Signing: %.5f s\tcycles: %llu\n",(time_signature/number_tests), (cycles_signature/number_tests));
+	printf("Verification: %.5f s\tcycles: %llu\n",(time_verification/number_tests), (cycles_verificaton/number_tests));
 
 	printf("\n\n------------------------------------------TEST-FUNCTIONS----------------------------\n\n");
 	// TODO: hier muss noch ein Test zur Verifikation von gespeicherten Signaturen rein.

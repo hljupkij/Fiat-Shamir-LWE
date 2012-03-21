@@ -44,14 +44,7 @@ int init_random(int number_chars);
  * @param 	polynomial Polynomial to analyze.
  * @return the highest coefficient of polynomial.
  **/
-NTL::ZZ Linf_norm_ZZ_pE(NTL::ZZ_pE polynomial);
-
-/**
- * Determine the highest coefficient of polynomial.
- * @param 	polynomial Polynomial to analyze.
- * @return the highest coefficient of polynomial.
- **/
-NTL::ZZ Linf_norm_ZZ_pX(NTL::ZZ_pX polynomial);
+NTL::ZZ LinfElement(NTL::ZZ_pX polynomial);
 
 /**
  * Return the sum of absolute value of polynomial coefficients.
@@ -59,24 +52,16 @@ NTL::ZZ Linf_norm_ZZ_pX(NTL::ZZ_pX polynomial);
  * @param polynomial Polynomial to analyze.
  * @return The sum of polynomial coefficients.
  */
-NTL::ZZ L1_norm_ZZ_pE(NTL::ZZ_pE polynomial);
-
-/**
- * Return the sum of absolute value of polynomial coefficients.
- * Polynomial coefficients are in range [-mod/2,...,mod/2].
- * @param polynomial Polynomial to analyze.
- * @return The sum of polynomial coefficients.
- */
-NTL::ZZ L1_norm_ZZ_pX(NTL::ZZ_pX polynomial);
+NTL::ZZ L1Element(NTL::ZZ_pX polynomial);
 /**
  * Return number of elements whose have L1-norm equal to norm_1.
  * L1|x| = norm_1
  * Assume that modulus of polynomial coefficients is greater as norm_1
  * @param polynomial_degree	Greatest degree of polynomials to analyze.
- * @param norm_1			L1-norm to determine.
+ * @param L1			L1-norm to determine.
  * @return Number of polynomials with L1-norm = norm_1
  */
-NTL::ZZ count_elements_with_L1(int polynomial_degree, int norm_1);
+NTL::ZZ elementsL1(int polynomial_degree, int L1);
 
 /**
  * Return number of elements whose have L1-norm less or equal to norm_1.
@@ -85,7 +70,7 @@ NTL::ZZ count_elements_with_L1(int polynomial_degree, int norm_1);
  * @param max_norm_1			L1-norm to determine.
  * @return	Number of polynomials with L1-norm <= norm_1
  */
-NTL::ZZ count_elements_up_to_L1(int polynomial_degree, int max_norm_1);
+NTL::ZZ elementsL1Max(int polynomial_degree, int max_norm_1);
 
 /**
  * Determine if each element of polynomial array is an element with max. L1-norm <= max_length.
@@ -94,30 +79,14 @@ NTL::ZZ count_elements_up_to_L1(int polynomial_degree, int max_norm_1);
  * @param array_length	Number of polynomials in array.
  * @return	Return true if each element of array has max Linf <= max_Linf , else false.
  */
-bool is_element_with_max_Linf(NTL::ZZ max_Linf, NTL::ZZ_pE element[], int array_length);
-
-/**
- * Determine if each element of polynomial array is an element with max. L1-norm <= max_length.
- * @param PP_m			How many elements should contain this array.
- * @param max_Linf		Maximal Linf-norm.
- * @param array			Array of polynomials.
- * @return	Return true if each element of array has max Linf <= max_Linf , else false.
- */
-bool is_element_with_max_Linf(int PP_m, NTL::ZZ max_Linf, std::vector<NTL::ZZ_pE> array);
+bool isElementOfRingWithLinfMax(NTL::ZZ LinfMax, NTL::ZZ_pE polynomialsArray[], int arrayLength);
 
 /**
  *	Return the number of polynomial coefficients unequal 0.
  * @param polynomial 	Polynomial to analyze.
  * @return The number of polynomial coefficients unequal 0.
  */
-int num_of_coeff_not_0(NTL::ZZ_pE polynomial);
-
-/**
- *	Return the number of polynomial coefficients unequal 0.
- * @param polynomial 	Polynomial to analyze.
- * @return The number of polynomial coefficients unequal 0.
- */
-int num_of_coeff_not_0(NTL::ZZ_pX polynomial);
+int coeffsNot0(NTL::ZZ_pX polynomial);
 
 /**
  * Return the number of polynomials with certain L1-norm and certain number of coefficients.
@@ -126,23 +95,54 @@ int num_of_coeff_not_0(NTL::ZZ_pX polynomial);
  * @param num_coeffs
  * @return
  */
-NTL::ZZ count_elements_with_L1_and_coeffs(int maxPolynomialDegree, int L1norm, int num_coeffs);
+NTL::ZZ elementsL1Coeffs(int polynomialDegree, int L1, int numberCoefficients);
 
-/* Generate a random polynomial whose L1-norm is equal to length. Random distribution. */
-NTL::ZZ_pE random_element_Dc(int polynomial_degree, NTL::ZZ L1_value, NTL::ZZ modulus);
 
-/* Convert a ZZ_pE-Array into an char-array.
- * Return a pointer to converted char-array. */
-unsigned char* convert_ZZ_pE_array_to_char_array(NTL::ZZ_pE *ZZ_pE_array, int number_of_ZZ_pE, unsigned long long* length_char);
+/**
+ * Generate a random polynomial whose L1-norm is equal to parameter L1.
+ * @param polynomialDegree	Maximum Degree of polynomial
+ * @param L1				L1-length to match.
+ * @param modulus			Set modulus of integer ring.
+ * @return random polynomial.
+ */
+NTL::ZZ_pE randomElementOfRingWithL1(int polynomialDegree, NTL::ZZ L1, NTL::ZZ modulus);
 
-/* Convert a ZZ_pE-Array into an char-array.
- * Place converted char-array in memory pointed by parameter. */
-int convert_ZZ_pE_array_to_char_array(NTL::ZZ_pE *ZZ_pE_array, int number_of_ZZ_pE, unsigned long long* length_char, unsigned char* char_array);
+/**
+ * Return a random element of polynomial ring R with certain Linf-norm.
+ * @param length_Linf	Maximum Linf-length of sampled polynomials.
+ * @return	random polynomial.
+ */
+NTL::ZZ_pE randomElementOfRingWithLinfMax(NTL::ZZ LinfMax);
 
-/* Convert a char-array in a ZZ_pE-array. */
-int convert_char_array_to_ZZ_pE_array(NTL::ZZ_pE *ZZ_pE_array, unsigned char* char_array, unsigned long long length_char, int number_of_ZZ_pE, int polynomial_degree);
+/**
+ * Convert a ZZ_pE-Array into an char-array.
+ * @param polynomialArray			Polynomial array to convert.
+ * @param lengthArray				Number of polynomials to convert.
+ * @param lengthConvertedChars		Store here the number of converted chars.
+ * @return	Array with converted chars.
+ */
+unsigned char* ZZpEArrayToCharArray(NTL::ZZ_pE *polynomialArray, int lengthPolynomialsArray, unsigned long long* lengthConvertedChars);
 
-/* Return a random element of polynomial ring R with certain Linf-norm. */
-NTL::ZZ_pE random_element_R_with_Linf(NTL::ZZ length_Linf);
+/**
+ *
+ * @param polynomialArray			Polynomial array to convert.
+ * @param lengthPolynomialsArray	Number of polynomials to convert.
+ * @param length_char				Store here the number of converted chars.
+ * @param char_array				Pointer to array, where to store converted chars.
+ * @return
+ */
+int convert_ZZ_pE_array_to_char_array(NTL::ZZ_pE *polynomialArray, int lengthPolynomialsArray, unsigned long long* lengthConvertedChars, unsigned char* convertedCharsArray);
+
+/**
+ * Convert polynomials stored in char-array back to ZZ_pE-array.
+ *
+ * @param polynomialArray			Pointer to array, where to store converted polynomials.
+ * @param charsArray				Pointer to char array with converted polynomials.
+ * @param lengthCharsArray			Length of char array.
+ * @param numberOfPolynomials		How many polynomials are stored in char array.
+ * @param polynomialDegree			Degree of polynomials, stored in char array.
+ * @return	0 if successful, -1 else.
+ */
+int charArrayToZZpEArray(NTL::ZZ_pE *polynomialArray, unsigned char* charsArray, unsigned long long lengthCharsArray, int numberOfPolynomials, int polynomialDegree);
 
 #endif /* AUX_H_ */

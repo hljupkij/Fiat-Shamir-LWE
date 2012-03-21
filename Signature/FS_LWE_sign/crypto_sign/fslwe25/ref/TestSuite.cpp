@@ -110,33 +110,33 @@ class TestSuite : public Test::Suite
 		}
 
 		void test_count_elements_up_to_L1(){
-			TEST_ASSERT(count_elements_up_to_L1(0,2) == NTL::ZZ::zero())
-			TEST_ASSERT(count_elements_up_to_L1(3,0) == NTL::to_ZZ(1))
-			TEST_ASSERT(count_elements_up_to_L1(3,3) == NTL::to_ZZ(63))
+			TEST_ASSERT(elementsL1Max(0,2) == NTL::ZZ::zero())
+			TEST_ASSERT(elementsL1Max(3,0) == NTL::to_ZZ(1))
+			TEST_ASSERT(elementsL1Max(3,3) == NTL::to_ZZ(63))
 		}
 
 		void test_count_elements_with_L1(){
 
-			TEST_ASSERT(count_elements_with_L1(0,0) == 0)
-			TEST_ASSERT(count_elements_with_L1(1,0) == 1)
-			TEST_ASSERT(count_elements_with_L1(0,1) == 0)
-			TEST_ASSERT(count_elements_with_L1(1,1) == 2)
+			TEST_ASSERT(elementsL1(0,0) == 0)
+			TEST_ASSERT(elementsL1(1,0) == 1)
+			TEST_ASSERT(elementsL1(0,1) == 0)
+			TEST_ASSERT(elementsL1(1,1) == 2)
 		}
 
 		void test_count_elements_with_L1_and_coeffs(){
 
-			TEST_ASSERT(count_elements_with_L1_and_coeffs(2,0,0)	==	NTL::to_ZZ(1))
-			TEST_ASSERT(count_elements_with_L1_and_coeffs(0,1,1)	==  NTL::ZZ::zero())
-			TEST_ASSERT(count_elements_with_L1_and_coeffs(0,0,1)	==	NTL::ZZ::zero())
+			TEST_ASSERT(elementsL1Coeffs(2,0,0)	==	NTL::to_ZZ(1))
+			TEST_ASSERT(elementsL1Coeffs(0,1,1)	==  NTL::ZZ::zero())
+			TEST_ASSERT(elementsL1Coeffs(0,0,1)	==	NTL::ZZ::zero())
 
-			TEST_ASSERT(count_elements_with_L1_and_coeffs(0,0,0)	==	NTL::ZZ::zero())
-			TEST_ASSERT(count_elements_with_L1_and_coeffs(2,1,0)	==	NTL::ZZ::zero())
+			TEST_ASSERT(elementsL1Coeffs(0,0,0)	==	NTL::ZZ::zero())
+			TEST_ASSERT(elementsL1Coeffs(2,1,0)	==	NTL::ZZ::zero())
 			// if coeff > L1
-			TEST_ASSERT(count_elements_with_L1_and_coeffs(2,1,2)	==	NTL::ZZ::zero())
+			TEST_ASSERT(elementsL1Coeffs(2,1,2)	==	NTL::ZZ::zero())
 
-			TEST_ASSERT(count_elements_with_L1_and_coeffs(-2,1,2)	==	NTL::ZZ::zero())
-			TEST_ASSERT(count_elements_with_L1_and_coeffs(2,-1,2)	==	NTL::ZZ::zero())
-			TEST_ASSERT(count_elements_with_L1_and_coeffs(2,2,-1)	==	NTL::ZZ::zero())
+			TEST_ASSERT(elementsL1Coeffs(-2,1,2)	==	NTL::ZZ::zero())
+			TEST_ASSERT(elementsL1Coeffs(2,-1,2)	==	NTL::ZZ::zero())
+			TEST_ASSERT(elementsL1Coeffs(2,2,-1)	==	NTL::ZZ::zero())
 		}
 
 		void test_Linf_norm_ZZ_pE(){
@@ -144,28 +144,21 @@ class TestSuite : public Test::Suite
 			NTL::ZZ p = test_input_parameter(PP);
 			initialize_ZZ_pE(p,512);
 
-			NTL::ZZ_pE two = NTL::to_ZZ_pE((p+1)/2);
-			NTL::ZZ_pE three = NTL::to_ZZ_pE((p-1)/2);
-			NTL::ZZ_pE one = NTL::to_ZZ_pE(-1);
+			NTL::ZZ_pX two = NTL::to_ZZ_pX((p+1)/2);
+			NTL::ZZ_pX three = NTL::to_ZZ_pX((p-1)/2);
+			NTL::ZZ_pX one = NTL::to_ZZ_pX(-1);
 
-			TEST_ASSERT(Linf_norm_ZZ_pE(two) 				== 	NTL::to_ZZ((p-1)/2))
-			TEST_ASSERT(Linf_norm_ZZ_pE(three) 				== 	NTL::to_ZZ((p-1)/2))
-			TEST_ASSERT(Linf_norm_ZZ_pE(one) 				== 	NTL::to_ZZ(1))
-			TEST_ASSERT(Linf_norm_ZZ_pE(NTL::ZZ_pE::zero())	==	NTL::ZZ::zero())
-		}
-
-		void test_L1_norm_ZZ_pE(){
-			NTL::ZZ_pE one = NTL::to_ZZ_pE(-1);
-
-			TEST_ASSERT(L1_norm_ZZ_pE(one) 						== NTL::to_ZZ(1))
-			TEST_ASSERT(L1_norm_ZZ_pE(NTL::ZZ_pE::zero())		== NTL::ZZ::zero())
+			TEST_ASSERT(LinfElement(two) 				== 	NTL::to_ZZ((p-1)/2))
+			TEST_ASSERT(LinfElement(three) 				== 	NTL::to_ZZ((p-1)/2))
+			TEST_ASSERT(LinfElement(one) 				== 	NTL::to_ZZ(1))
+			TEST_ASSERT(LinfElement(NTL::ZZ_pX::zero())	==	NTL::ZZ::zero())
 		}
 
 		void test_L1_norm_ZZ_pX(){
 			NTL::ZZ_pX one = NTL::to_ZZ_pX(-1);
 
-			TEST_ASSERT(L1_norm_ZZ_pX(one) 						== NTL::to_ZZ(1))
-			TEST_ASSERT(L1_norm_ZZ_pE(NTL::ZZ_pE::zero())		== NTL::ZZ::zero())
+			TEST_ASSERT(L1Element(one) 						== NTL::to_ZZ(1))
+			TEST_ASSERT(L1Element(NTL::ZZ_pX::zero())		== NTL::ZZ::zero())
 		}
 
 		void test_is_element_Gm(){
@@ -183,8 +176,8 @@ class TestSuite : public Test::Suite
 				test2_ZZ_pE[2] = const1;
 				test2_ZZ_pE[3] = const1;
 
-			TEST_ASSERT(is_element_with_max_Linf(NTL::to_ZZ(-1),test1_ZZ_pE,3) ==	false)
-			TEST_ASSERT(is_element_with_max_Linf(NTL::to_ZZ(-1),test1_ZZ_pE,0) ==	false)
+			TEST_ASSERT(isElementOfRingWithLinfMax(NTL::to_ZZ(-1),test1_ZZ_pE,3) ==	false)
+			TEST_ASSERT(isElementOfRingWithLinfMax(NTL::to_ZZ(-1),test1_ZZ_pE,0) ==	false)
 		}
 
 		void test_num_of_coeff_not_0(){
@@ -202,14 +195,14 @@ class TestSuite : public Test::Suite
 				test2_ZZ_pE[2] = const1;
 				test2_ZZ_pE[3] = const1;
 
-			TEST_ASSERT(num_of_coeff_not_0(NTL::ZZ_pE::zero())	== 0)
-			TEST_ASSERT(num_of_coeff_not_0(NTL::ZZ_pE::zero())	== 0)
+			TEST_ASSERT(coeffsNot0(NTL::ZZ_pX::zero())	== 0)
+			TEST_ASSERT(coeffsNot0(NTL::ZZ_pX::zero())	== 0)
 		}
 
 		void test_random_element_R_with_Linf(){
 
 				NTL::ZZ max_length = NTL::to_ZZ(random());
-				TEST_ASSERT(Linf_norm_ZZ_pE(random_element_R_with_Linf(max_length)) <= max_length)
+				TEST_ASSERT(LinfElement(rep(randomElementOfRingWithLinfMax(max_length))) <= max_length)
 		}
 
 		void test_generate_element_Dc(){
@@ -233,7 +226,7 @@ class TestSuite : public Test::Suite
 
 			generate_random_hash_function(test,4);
 			convert_ZZ_pE_array_to_char_array(test,4,&length, char_array);
-			convert_char_array_to_ZZ_pE_array(test_rest,char_array,length,4,512);
+			charArrayToZZpEArray(test_rest,char_array,length,4,512);
 
 			TEST_ASSERT(compare_ZZ_pE(test,test_rest,4) == 0);
 			free(char_array);
@@ -243,11 +236,11 @@ class TestSuite : public Test::Suite
 			unsigned char sk[CRYPTO_SECRETKEYBYTES];
 			unsigned  char pk[CRYPTO_PUBLICKEYBYTES];
 
-			crypto_sign_keypair(pk, sk);
+			FSLWE25_crypto_sign_keypair(pk, sk);
 			NTL::ZZ_pE hash_polynomial_sk[PUBLIC_PARAMETER_M];
 			NTL::ZZ_pE hash_polynomial_pk[PUBLIC_PARAMETER_M];
-			convert_char_array_to_ZZ_pE_array(hash_polynomial_sk, (unsigned char*)&sk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION, PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
-			convert_char_array_to_ZZ_pE_array(hash_polynomial_pk,(unsigned char*)&pk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION,PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_N);
+			charArrayToZZpEArray(hash_polynomial_sk, (unsigned char*)&sk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION, PUBLIC_PARAMETER_M,PUBLIC_PARAMETER_N);
+			charArrayToZZpEArray(hash_polynomial_pk,(unsigned char*)&pk[BYTES_PRIMENUMBER], BYTES_HASHFUNCTION,PUBLIC_PARAMETER_M, PUBLIC_PARAMETER_N);
 
 			TEST_ASSERT(compare_ZZ_pE(hash_polynomial_pk, hash_polynomial_sk, PUBLIC_PARAMETER_M) == 0);
 		}
@@ -267,8 +260,8 @@ class TestSuite : public Test::Suite
 				generate_sk(PP,sk);
 				NTL::ZZ_pE pk =	LWE_hash(PP,hash_polynomials,sk,4);
 
-				NTL::ZZ_pE random_E = random_element_Dc(512,NTL::to_ZZ(24),p);
-				NTL::ZZ_pE random_E1 = random_element_Dc(512,NTL::to_ZZ(24),p);
+				NTL::ZZ_pE random_E = randomElementOfRingWithL1(512,NTL::to_ZZ(24),p);
+				NTL::ZZ_pE random_E1 = randomElementOfRingWithL1(512,NTL::to_ZZ(24),p);
 				random_element_Dy(PP,y);
 
 				NTL::ZZ_pE Hy = LWE_hash(PP,hash_polynomials,y,4);
@@ -328,19 +321,19 @@ class TestSuite : public Test::Suite
 				generate_random_hash_function(hash_polynomials, PP.m);
 
 				convert_ZZ_pE_array_to_char_array(hash_polynomials, PP.m, &length, char_array);
-				convert_char_array_to_ZZ_pE_array(hash_polynomials_, char_array, length, PP.m, PP.n);
+				charArrayToZZpEArray(hash_polynomials_, char_array, length, PP.m, PP.n);
 				TEST_ASSERT(compare_ZZ_pE(hash_polynomials,hash_polynomials_, PP.m) == 0);
 
 				generate_sk(PP,sk);
 
 				convert_ZZ_pE_array_to_char_array(sk, PP.m, &length, char_array);
-				convert_char_array_to_ZZ_pE_array(sk_,char_array, length, PP.m, PP.n);
+				charArrayToZZpEArray(sk_,char_array, length, PP.m, PP.n);
 				TEST_ASSERT(compare_ZZ_pE(sk,sk_, PP.m) == 0);
 
 				NTL::ZZ_pE pk =	LWE_hash(PP,hash_polynomials,sk,PP.m);
 
 				convert_ZZ_pE_array_to_char_array(&pk, 1, &length, char_array);
-				convert_char_array_to_ZZ_pE_array(pk_,char_array, length, 1, PP.n);
+				charArrayToZZpEArray(pk_,char_array, length, 1, PP.n);
 				TEST_ASSERT(compare_ZZ_pE(&pk,pk_, 1) == 0);
 
 //				sign_message(PP,(unsigned char *)message,(unsigned long long int)sizeof(message)/sizeof(char), sk, hash_polynomials, &e, z);
@@ -353,16 +346,16 @@ class TestSuite : public Test::Suite
 	//				NTL::ZZ_pE e = random_element_Dc(PP.n, NTL::to_ZZ(PP.k), p);
 					e = RandomOracle_Dc(PP, Hy,(unsigned char *) message, sizeof(message)/sizeof(char));
 					convert_ZZ_pE_array_to_char_array(&e, 1, &length, char_array);
-					convert_char_array_to_ZZ_pE_array(e_,char_array, length, 1, PP.n);
+					charArrayToZZpEArray(e_,char_array, length, 1, PP.n);
 					TEST_ASSERT(compare_ZZ_pE(&e, e_, 1) == 0);
 
 					for (int var = 0; var < PP.m; ++var) {
 						z[var] = sk[var]*e + y[var];
 					}
-				}while(!is_element_with_max_Linf(max_length, z, PP.m));
+				}while(!isElementOfRingWithLinfMax(max_length, z, PP.m));
 
 				convert_ZZ_pE_array_to_char_array(z, PP.m, &length, char_array);
-				convert_char_array_to_ZZ_pE_array(z_,char_array, length, PP.m, PP.n);
+				charArrayToZZpEArray(z_,char_array, length, PP.m, PP.n);
 				TEST_ASSERT(compare_ZZ_pE(z,z_, PP.m) == 0);
 
 				NTL::ZZ_pE Hz = LWE_hash(PP, hash_polynomials, z, PP.m);

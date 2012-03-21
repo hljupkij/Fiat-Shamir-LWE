@@ -19,4 +19,4 @@
 /** Length of message overhead with signature */
 #define CRYPTO_BYTES (BYTES_SIGNATUR_E + BYTES_SIGNATUR_Z)
 /** Define which version of implementation */
-#define CRYPTO_VERSION "0.02"
+#define CRYPTO_VERSION "1.0"

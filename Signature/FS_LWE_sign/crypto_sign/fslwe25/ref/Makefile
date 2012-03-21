@@ -1,13 +1,15 @@
 CC = g++
 CFLAGS = -O3 -Wall -g
 INCLUDES = -I ~/sw/include -I /usr/local/include
-LIBS = -lm -lntl -lgmp -lcrypto -lrt -lcpptest
-LIBINC = -L ~/sw/lib -L /usr/include/lib -L /usr/lib -L /usr/local/lib
+LIBS = -lm -lcrypto -lrt -lcpptest  -lgmp -lntl 
+LIBINC =  -L /usr/include/lib -L /usr/lib -L /usr/local/lib
 
-OBJ = aux.o fs_lwe_sign.o test.o
+OBJ = aux.o fs_lwe_sign.o test.o cpucycles.o
 OBJ2 = aux.o fs_lwe_sign.o TestSuite.o
+OBJ3 = mpzX_test.o mpzX.o cpucycles.o
 OUT = test
 OUT2 = TestSuite
+OUT3 = test_mpzX
 
 
 # link
@@ -22,8 +24,9 @@ all:    $(OBJ)
 test: $(OBJ2)
 	$(CC) -o $(OUT2) $(OBJ2) $(LIBS) $(LIBINC)
 
+test_mpzX: $(OBJ3)
+	$(CC) -o $(OUT3) $(OBJ3) $(LIBS) $(LIBINC)	
+
 # make clean
 clean:
-	-rm -f $(OUT)
-	-rm -f $(OUT2)
-	-rm -f *.o
+	-rm -f aux.o fs_lwe_sign.o test.o TestSuite.o mpzX_test.o mpzX.o
